@@ -1,0 +1,9 @@
+location,temperature,feels_like,humidity,pressure,description,timestamp
+Lagos,26.12,26.12,83,1014,scattered clouds,2025-09-13T18:44:25.465418
+Abuja,27.24,29.17,69,1014,thunderstorm,2025-09-13T18:44:25.613649
+Kano,24.26,24.8,79,1013,broken clouds,2025-09-13T18:44:25.754393
+Ibadan,24.91,25.75,88,1015,thunderstorm,2025-09-13T18:44:25.896208
+Port Harcourt,24.18,25.13,95,1015,overcast clouds,2025-09-13T18:44:26.038514
+Benin City,21.53,22.3,98,1015,overcast clouds,2025-09-13T18:44:26.182409
+Kaduna,22.04,22.68,91,1014,overcast clouds,2025-09-13T18:44:26.318818
+Jos,18.99,19.14,84,1015,scattered clouds,2025-09-13T18:44:26.463524
