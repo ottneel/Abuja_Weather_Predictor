@@ -1,0 +1,15 @@
+creation_timestamp: 1765839485816
+current_stage: None
+deployment_job_state: null
+description: null
+last_updated_timestamp: 1765839485816
+model_id: m-f1a6f061ea37464db93c7e75b5821cd1
+name: AbujaTemps
+run_id: 44a8be0f99e84231a9339080ca0f9c48
+run_link: null
+source: models:/m-f1a6f061ea37464db93c7e75b5821cd1
+status: READY
+status_message: null
+storage_location: /workspaces/Abuja_Weather_Predictor/mlruns/523171298156663509/models/m-f1a6f061ea37464db93c7e75b5821cd1/artifacts
+user_id: null
+version: 1

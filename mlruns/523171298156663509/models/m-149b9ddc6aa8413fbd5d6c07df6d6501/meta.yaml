@@ -1,0 +1,10 @@
+artifact_location: /workspaces/Abuja_Weather_Predictor/mlruns/523171298156663509/models/m-149b9ddc6aa8413fbd5d6c07df6d6501/artifacts
+creation_timestamp: 1765839572466
+experiment_id: '523171298156663509'
+last_updated_timestamp: 1765839575279
+model_id: m-149b9ddc6aa8413fbd5d6c07df6d6501
+model_type: null
+name: model
+source_run_id: 75036b48dc8e4ca6bd73ed8fd7db3008
+status: 2
+status_message: null
