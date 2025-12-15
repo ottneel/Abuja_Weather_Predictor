@@ -1,25 +1,30 @@
+#version: '3.8'
+
 services:
   pgdatabase:
     image: postgres:16
+    container_name: air_quality_db 
     environment:
-      - POSTGRES_USER=roots
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=roots
-      - POSTGRES_DB=green_ny_taxi
+      - POSTGRES_DB=abuja_air_quality_data 
     volumes:
       - "./temperature_data:/var/lib/postgresql/data:rw"
     ports:
       - "5432:5432"
     networks:
       - temperature_network
+
   pgadmin:
     image: dpage/pgadmin4
+    container_name: air_quality_pgadmin
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
       - PGADMIN_DEFAULT_PASSWORD=roots
     ports:
       - "8080:80"
     volumes:
-      - "./temperature_pgadmin_data:/var/lib/pgadmin/"
+      - "pgadmin_data:/var/lib/pgadmin/"
     networks:
       - temperature_network
     depends_on:
@@ -28,3 +33,6 @@ services:
 networks:
   temperature_network:
     driver: bridge
+
+volumes:
+  pgadmin_data:
