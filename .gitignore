@@ -1,2 +1,3 @@
 temperature_data/
 temperature_pgadmin_data/
+.env
