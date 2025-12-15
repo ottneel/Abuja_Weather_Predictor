@@ -1,0 +1,30 @@
+services:
+  pgdatabase:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=roots
+      - POSTGRES_PASSWORD=roots
+      - POSTGRES_DB=green_ny_taxi
+    volumes:
+      - "./temperature_data:/var/lib/postgresql/data:rw"
+    ports:
+      - "5432:5432"
+    networks:
+      - temperature_network
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=roots
+    ports:
+      - "8080:80"
+    volumes:
+      - "./temperature_pgadmin_data:/var/lib/pgadmin/"
+    networks:
+      - temperature_network
+    depends_on:
+      - pgdatabase
+
+networks:
+  temperature_network:
+    driver: bridge
