@@ -4,3 +4,4 @@ temperature_pgadmin_data/
 .env
 .env
 mlruns/
+mlruns/
