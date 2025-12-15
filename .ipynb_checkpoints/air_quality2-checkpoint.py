@@ -155,7 +155,7 @@ def load_dataframes_to_postgres(
     password: str, 
     host: str = 'localhost', 
     port: int = 5432,
-    if_exists: str = 'append'
+    if_exists: str = 'replace'
 ) -> None:
     """
     Load multiple pandas DataFrames into PostgreSQL tables
