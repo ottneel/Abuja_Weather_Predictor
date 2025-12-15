@@ -5,9 +5,9 @@ services:
     image: postgres:16
     container_name: air_quality_db 
     environment:
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=roots
       - POSTGRES_PASSWORD=roots
-      - POSTGRES_DB=abuja_air_quality_data 
+      - POSTGRES_DB=abuja_air_quality 
     volumes:
       - "./temperature_data:/var/lib/postgresql/data:rw"
     ports:
