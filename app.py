@@ -1,0 +1,113 @@
+import streamlit as st
+import pandas as pd
+import plotly.graph_objects as go
+from sqlalchemy import create_engine
+import os
+from dotenv import load_dotenv
+
+# 1. Config & Setup
+st.set_page_config(page_title="Abuja Weather Brain", layout="wide")
+load_dotenv()
+
+# 2. Database Connection
+def get_db_connection():
+    return create_engine(
+        f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASS')}@"
+        f"{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+    )
+
+# 3. Load Data
+@st.cache_data(ttl=600) # Cache data for 10 mins so the DB doesn't get hammered
+def load_data():
+    engine = get_db_connection()
+    
+    # A. Get Historical Data (Last 90 days only, to keep graph clean)
+    history_query = """
+    SELECT timestamp, temperature, humidity 
+    FROM sensor_data 
+    ORDER BY timestamp DESC 
+    LIMIT 90
+    """
+    df_history = pd.read_sql(history_query, engine)
+    df_history['timestamp'] = pd.to_datetime(df_history['timestamp'])
+    
+    # B. Get Latest Forecast
+    # We only want the *most recent* batch of predictions made
+    forecast_query = """
+    SELECT forecast_date, predicted_temperature 
+    FROM daily_forecasts 
+    WHERE created_at = (SELECT MAX(created_at) FROM daily_forecasts)
+    ORDER BY forecast_date ASC
+    """
+    df_forecast = pd.read_sql(forecast_query, engine)
+    df_forecast['forecast_date'] = pd.to_datetime(df_forecast['forecast_date'])
+    
+    return df_history, df_forecast
+
+# 4. The App Layout
+try:
+    df_history, df_forecast = load_data()
+
+    st.title("🇳🇬 Abuja Weather Predictor")
+    st.markdown("### AI-Powered Temperature Forecast")
+
+    # KPI Metrics Row
+    col1, col2, col3 = st.columns(3)
+    
+    # Latest actual reading
+    current_temp = df_history.iloc[0]['temperature']
+    current_time = df_history.iloc[0]['timestamp'].strftime('%Y-%m-%d')
+    
+    col1.metric("Latest Reading", f"{current_temp:.1f}°C", current_time)
+    
+    # Next predicted day
+    next_pred = df_forecast.iloc[0]['predicted_temperature']
+    col2.metric("Tomorrow's Forecast", f"{next_pred:.1f}°C")
+    
+    # Model Status
+    col3.metric("Model Status", "Active", "v2.0")
+
+    # --- MAIN CHART (The "Wow" Factor) ---
+    st.subheader("Temperature Trend: History vs. AI Prediction")
+    
+    fig = go.Figure()
+
+    # Plot History (Blue Line)
+    fig.add_trace(go.Scatter(
+        x=df_history['timestamp'], 
+        y=df_history['temperature'],
+        mode='lines',
+        name='Historical Data',
+        line=dict(color='deepskyblue', width=2)
+    ))
+
+    # Plot Forecast (Red Dotted Line)
+    fig.add_trace(go.Scatter(
+        x=df_forecast['forecast_date'], 
+        y=df_forecast['predicted_temperature'],
+        mode='lines+markers',
+        name='AI Forecast',
+        line=dict(color='firebrick', width=2, dash='dash')
+    ))
+
+    fig.update_layout(
+        xaxis_title="Date",
+        yaxis_title="Temperature (°C)",
+        template="plotly_dark",
+        hovermode="x unified"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    # --- DATA TABLES ---
+    with st.expander("See Raw Data"):
+        col_a, col_b = st.columns(2)
+        col_a.subheader("Recent History")
+        col_a.dataframe(df_history.head(10))
+        
+        col_b.subheader("Upcoming Forecast")
+        col_b.dataframe(df_forecast)
+
+except Exception as e:
+    st.error(f"Connection Error: {e}")
+    st.info("Make sure Docker is running and you have run 'python predict.py' at least once.")
