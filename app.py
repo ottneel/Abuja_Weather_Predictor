@@ -6,7 +6,7 @@ import os
 from dotenv import load_dotenv
 
 # 1. Config & Setup
-st.set_page_config(page_title="Abuja Weather Brain", layout="wide")
+st.set_page_config(page_title="Abuja Weather Forecast", layout="wide")
 load_dotenv()
 
 # 2. Database Connection
@@ -49,7 +49,7 @@ try:
     df_history, df_forecast = load_data()
 
     st.title("🇳🇬 Abuja Weather Predictor")
-    st.markdown("### AI-Powered Temperature Forecast")
+    st.markdown("### Temperature Forecast")
 
     # KPI Metrics Row
     col1, col2, col3 = st.columns(3)
@@ -65,10 +65,10 @@ try:
     col2.metric("Tomorrow's Forecast", f"{next_pred:.1f}°C")
     
     # Model Status
-    col3.metric("Model Status", "Active", "v2.0")
+    col3.metric("Model Status", "Active")
 
     # --- MAIN CHART (The "Wow" Factor) ---
-    st.subheader("Temperature Trend: History vs. AI Prediction")
+    st.subheader("Temperature Trend: History vs. Prediction")
     
     fig = go.Figure()
 
@@ -86,7 +86,7 @@ try:
         x=df_forecast['forecast_date'], 
         y=df_forecast['predicted_temperature'],
         mode='lines+markers',
-        name='AI Forecast',
+        name='Forecast',
         line=dict(color='firebrick', width=2, dash='dash')
     ))
 
