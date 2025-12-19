@@ -7,3 +7,4 @@ requests
 statsmodels
 mlflow
 scikit-learn
+pmdarima

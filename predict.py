@@ -16,43 +16,91 @@ def get_db_engine():
         f"{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
     )
 
+def get_data_since_last_training(last_known_date):
+    """
+    Fetches the 'Gap Data': everything recorded since the model was last trained.
+    """
+    engine = get_db_engine()
+    print(f"Fetching fresh data since {last_known_date}...")
+    
+    query = """
+        SELECT timestamp, temperature 
+        FROM sensor_data
+        WHERE temperature IS NOT NULL 
+        AND timestamp > %(last_date)s
+        ORDER BY timestamp ASC
+    """
+    df = pd.read_sql(query, engine, params={'last_date': last_known_date})
+    
+    if df.empty:
+        return pd.Series(dtype=float)
+    
+    # CRITICAL: Must process exactly like training (Daily Mean)
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    df.set_index('timestamp', inplace=True)
+    daily_data = df['temperature'].resample('D').mean().interpolate(method='time')
+    
+    return daily_data
+
 def generate_forecast():
     model_name = "AbujaTemps"
     print(f"Loading latest model for '{model_name}'...")
     
     try:
-        # Load the latest Production or Staging model (or just latest version)
-        # Note: If you haven't transitioned a model to 'Production' in UI, use 'latest'
+        # 1. Load Frozen Model
         model_uri = f"models:/{model_name}/latest"
         loaded_model = mlflow.statsmodels.load_model(model_uri)
         
-        # Forecast 7 days into the future
+        # 2. Identify the Gap
+        # Statsmodels remembers the last date it was trained on
+        last_training_date = pd.to_datetime(loaded_model.data.dates[-1])
+        print(f"Model internal clock stopped at: {last_training_date.date()}")
+        
+        # 3. Fetch the Gap Data
+        new_data = get_data_since_last_training(last_training_date)
+        
+        # === THE FIX STARTS HERE ===
+        # Filter out any data that overlaps with what the model already has.
+        # We only want dates strictly AFTER the last training date.
+        new_data = new_data[new_data.index > last_training_date]
+        # === THE FIX ENDS HERE ===
+
+        # 4. Update the Model State
+        if not new_data.empty:
+            print(f"Rolling forward... Adding {len(new_data)} days of recent history.")
+            # refit=False updates the history state without slow re-training
+            loaded_model = loaded_model.append(new_data, refit=False)
+            current_last_date = new_data.index[-1]
+        else:
+            print("No new data found. Model is already up to date.")
+            current_last_date = last_training_date
+
+        # 5. Forecast from the NEW "Today"
         steps = 7
         forecast = loaded_model.forecast(steps=steps)
         
-        # Create dates for the forecast
-        today = datetime.now().date()
-        forecast_dates = [today + timedelta(days=i) for i in range(1, steps + 1)]
+        # Calculate dates starting from the end of the NEW data
+        forecast_dates = [current_last_date + timedelta(days=i) for i in range(1, steps + 1)]
         
-        # Prepare DataFrame for DB
+        # 6. Save
         forecast_df = pd.DataFrame({
             'forecast_date': forecast_dates,
             'predicted_temperature': forecast.values,
-            'model_version': 'latest', # Ideally you'd grab the actual version number
+            'model_version': 'latest_rolled',
             'created_at': datetime.now()
         })
         
         print("Predictions generated:")
         print(forecast_df[['forecast_date', 'predicted_temperature']])
         
-        # Save to DB
         engine = get_db_engine()
         forecast_df.to_sql('daily_forecasts', engine, if_exists='append', index=False)
-        print("Success! Forecasts saved to database.")
+        print("Success! Forecasts saved.")
         
     except Exception as e:
-        print(f"Error generating forecast: {e}")
-        print("Did you run train.py at least once?")
+        print(f"Error: {e}")
+        import traceback
+        traceback.print_exc()
 
 if __name__ == "__main__":
     generate_forecast()

@@ -58,7 +58,7 @@ try:
     current_temp = df_history.iloc[0]['temperature']
     current_time = df_history.iloc[0]['timestamp'].strftime('%Y-%m-%d')
     
-    col1.metric("Latest Reading", f"{current_temp:.1f}°C", current_time)
+    col1.metric("Today's Temperature", f"{current_temp:.1f}°C", current_time)
     
     # Next predicted day
     next_pred = df_forecast.iloc[0]['predicted_temperature']
