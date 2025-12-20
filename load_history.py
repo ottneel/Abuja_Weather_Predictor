@@ -30,7 +30,7 @@ def clean_series(series, name):
     return series
 
 def process_csv_history():
-    # --- CHANGED THIS LINE TO MATCH YOUR FOLDER NAME ---
+    # folder path
     raw_path = "./we_csv_files" 
     
     # Check if folder exists
@@ -49,7 +49,7 @@ def process_csv_history():
     
     all_data = []
     
-    # --- PHASE 1: READ AND PARSE ---
+    # 1. Read the data 
     for file in csv_files:
         try:
             # Read file without header
@@ -77,7 +77,7 @@ def process_csv_history():
 
     full_df = pd.concat(all_data, ignore_index=True)
     
-    # --- PHASE 2: PIVOT ---
+    # 2. Restructure the Dataset
     print("Pivoting data...")
     metrics_map = {
         'temperature': 'temperature',
@@ -96,7 +96,7 @@ def process_csv_history():
         if col not in pivot_df.columns:
             pivot_df[col] = np.nan
 
-    # --- PHASE 3: CLEANING & RESAMPLING ---
+    # 3. Resampling the data and filling missing data
     print("Cleaning and Resampling...")
     
     daily_df = pivot_df.resample('D').mean()
@@ -112,7 +112,7 @@ def process_csv_history():
     daily_df['source'] = 'csv_history'
     daily_df = daily_df.reset_index()
 
-    # --- PHASE 4: UPLOAD ---
+    # 4. Uploading the data
     print(f"Uploading {len(daily_df)} clean daily records to DB...")
     engine = get_db_engine()
     
