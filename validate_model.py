@@ -11,7 +11,7 @@ import os
 import matplotlib.pyplot as plt
 import warnings
 
-warnings.filterwarnings('ignore') # Silence innocent warnings
+warnings.filterwarnings('ignore') # Suppress warnings
 load_dotenv()
 
 # Setup MLflow
