@@ -3,24 +3,32 @@ import sys
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 
-# 1. Force load the .env file
+# load the .env file
 load_dotenv()
 
-# 2. Get variables with safety checks
-user = os.getenv('DB_USER', 'roots')
-password = os.getenv('DB_PASS', 'roots')
+# Get variables with safety checks
+user = os.getenv('DB_USER')
+password = os.getenv('DB_PASS')
 host = os.getenv('DB_HOST', 'localhost')
 port = os.getenv('DB_PORT', '5432')
-dbname = os.getenv('DB_NAME', 'abuja_air_quality')
+dbname = os.getenv('DB_NAME')
 
-# 3. Debug Print
-print(f"DEBUG: Connecting as USER={user} on PORT={port} to DB={dbname}")
+# Validation: Stop everything if secrets are missing
+if not user or not password or not dbname:
+    print("ERROR: One or more required environment variables are missing.")
+    print(f"Detected: User={user}, DB={dbname} (Password hidden)")
+    print("Please check your .env file.")
+    sys.exit(1) # Exit the script with an error code
+
+
+# Connection Parameters & Port Fallback
+print(f" Connecting as USER={user} on PORT={port} to DB={dbname}")
 
 if port is None or port == 'None':
     print("CRITICAL ERROR: DB_PORT is still None. Hardcoding to 5432.")
     port = '5432'
 
-# 4. Connect
+# Connect
 try:
     connection_string = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
     engine = create_engine(connection_string)
@@ -28,12 +36,11 @@ try:
     with engine.connect() as conn:
         print("Connected! Setting up tables...")
 
-        # --- STEP A: Drop the old weak table ---
+        # 1. Drop the old weak table 
         conn.execute(text("DROP TABLE IF EXISTS temperature;"))
         print("Dropped old 'temperature' table.")
 
-        # --- STEP B: Create the new SUPER table ---
-        # (I fixed the syntax error here)
+        # 2. Create the new table 
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS sensor_data (
                 timestamp TIMESTAMP,
@@ -48,7 +55,7 @@ try:
         """))
         print("Created 'sensor_data' table.")
 
-        # --- STEP C: Create Forecast Table ---
+        # 3. Create the Predictions Table
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS daily_forecasts (
                 id SERIAL PRIMARY KEY,
@@ -60,7 +67,8 @@ try:
         """))
         print("Created 'daily_forecasts' table.")
 
-        conn.commit() # Save changes
+        conn.commit() 
+        # Save changes
         print(" SUCCESS: All database tables are ready!")
 
 except Exception as e:
