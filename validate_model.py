@@ -63,7 +63,7 @@ def run_walk_forward_validation():
     with mlflow.start_run(run_name="Walk_Forward_Validation"):
         
         # 2. MODEL SELECTION LOGIC
-        # We need to decide: Do we test an existing model, or find a new one?
+        # Do we test an existing model, or find a new one?
         
         print("Attempting to load latest Production model...")
         model_fit = None
@@ -75,8 +75,8 @@ def run_walk_forward_validation():
             
             print(f"Found existing model! Testing parameters: {loaded_model.model.order}")
             
-            # We construct a NEW model instance using the OLD parameters (The Recipe)
-            # but trained ONLY on the 80% data (The Ingredients)
+            # Construct a NEW model instance using the OLD parameters
+            # but trained ONLY on the 80% data
             model = SARIMAX(
                 train_data,
                 order=loaded_model.model.order,
@@ -87,8 +87,8 @@ def run_walk_forward_validation():
             model_fit = model.fit(disp=False)
 
         except Exception as e:
-            # OPTION B: COLD START (Fresh Project)
-            # If no model exists in MLflow, we must find the best parameters ourselves
+            # For a Fresh Project
+            # If no model exists in MLflow, we must find the best parameters
             # using only the training data available.
             print(f"No production model found ({e}). Running 'Cold Start' Auto-ARIMA...")
             
@@ -136,7 +136,7 @@ def run_walk_forward_validation():
         mae = mean_absolute_error(test_data, predictions)
         rmse = np.sqrt(mean_squared_error(test_data, predictions))
         
-        print(f"\n=== Validation Results ===")
+        print(f"\n Validation Results")
         print(f"MAE:  {mae:.4f} °C")
         print(f"RMSE: {rmse:.4f} °C")
         
