@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Setup MLflow
+# Setup MLflow Connection
 mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "./mlruns"))
 
 def get_db_engine():
@@ -59,12 +59,10 @@ def generate_forecast():
         # 3. Fetch the Gap Data
         new_data = get_data_since_last_training(last_training_date)
         
-        # === THE FIX STARTS HERE ===
-        # Filter out any data that overlaps with what the model already has.
-        # We only want dates strictly AFTER the last training date.
-        new_data = new_data[new_data.index > last_training_date]
-        # === THE FIX ENDS HERE ===
 
+        # Filter out any data that overlaps with what the model already has.
+        new_data = new_data[new_data.index > last_training_date]
+        
         # 4. Update the Model State
         if not new_data.empty:
             print(f"Rolling forward... Adding {len(new_data)} days of recent history.")
@@ -76,7 +74,7 @@ def generate_forecast():
             current_last_date = last_training_date
 
         # 5. Forecast from the NEW "Today"
-        steps = 7
+        steps = 3
         forecast = loaded_model.forecast(steps=steps)
         
         # Calculate dates starting from the end of the NEW data
