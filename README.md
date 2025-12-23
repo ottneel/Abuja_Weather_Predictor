@@ -14,7 +14,7 @@ This project demonstrates a complete MLOps lifecycle integrating:
 
 ## B. Data Architecture
 
-![Architecture Diagram]([./image/"weather flowchart.png"](https://github.com/ottneel/Abuja_Weather_Predictor/blob/2889a0149598b0f8457255d3ff64b1ade703a1b6/image/weather%20flowchart.png))
+![Architecture Diagram](images/weather_flowchart.png)
 
 ## C. Tools & Technologies
 
