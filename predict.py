@@ -35,7 +35,7 @@ def get_data_since_last_training(last_known_date):
     if df.empty:
         return pd.Series(dtype=float)
     
-    # CRITICAL: Must process exactly like training (Daily Mean)
+    # process exactly like training (Daily Mean)
     df['timestamp'] = pd.to_datetime(df['timestamp'])
     df.set_index('timestamp', inplace=True)
     daily_data = df['temperature'].resample('D').mean().interpolate(method='time')
@@ -44,11 +44,11 @@ def get_data_since_last_training(last_known_date):
 
 def generate_forecast():
     model_name = "AbujaTemps"
-    print(f"Loading latest model for '{model_name}'...")
+    print(f"Loading latest Production model for '{model_name}'...")
     
     try:
-        # 1. Load Frozen Model
-        model_uri = f"models:/{model_name}/latest"
+        # 1. Load Production Model
+        model_uri = f"models:/{model_name}/Production"
         loaded_model = mlflow.statsmodels.load_model(model_uri)
         
         # 2. Identify the Gap
@@ -59,7 +59,6 @@ def generate_forecast():
         # 3. Fetch the Gap Data
         new_data = get_data_since_last_training(last_training_date)
         
-
         # Filter out any data that overlaps with what the model already has.
         new_data = new_data[new_data.index > last_training_date]
         
@@ -84,7 +83,7 @@ def generate_forecast():
         forecast_df = pd.DataFrame({
             'forecast_date': forecast_dates,
             'predicted_temperature': forecast.values,
-            'model_version': 'latest_rolled',
+            'model_version': 'production_rolled',
             'created_at': datetime.now()
         })
         
