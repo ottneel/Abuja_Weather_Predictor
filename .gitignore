@@ -1,7 +1,4 @@
 temperature_data/
 temperature_pgadmin_data/
 .env
-.env
-.env
-mlruns/
 mlruns/
