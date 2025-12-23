@@ -35,7 +35,7 @@ def get_data_since_last_training(last_known_date):
     if df.empty:
         return pd.Series(dtype=float)
     
-    # CRITICAL: Must process exactly like training (Daily Mean)
+    # process exactly like training (Daily Mean)
     df['timestamp'] = pd.to_datetime(df['timestamp'])
     df.set_index('timestamp', inplace=True)
     daily_data = df['temperature'].resample('D').mean().interpolate(method='time')
@@ -47,7 +47,7 @@ def generate_forecast():
     print(f"Loading latest Production model for '{model_name}'...")
     
     try:
-        # 1. Load Production Model (The Fix)
+        # 1. Load Production Model
         model_uri = f"models:/{model_name}/Production"
         loaded_model = mlflow.statsmodels.load_model(model_uri)
         
