@@ -7,7 +7,7 @@ An end-to-end autonomous weather forecasting engine that ingests live sensor dat
 This project demonstrates a complete MLOps lifecycle integrating:
 - **OpenWeatherMap API** for real-time data extraction
 - **PostgreSQL** for centralized data warehousing and state management
-- **Auto-ARIMA** for seasonality detection ($m=3$) and trend analysis
+- **Auto-ARIMA** for seasonality detection ($m=7$) and trend analysis
 - **MLflow** for experiment tracking and model registry
 - **Walk-Forward Validation** for rigorous backtesting against local micro-climates
 - **Streamlit** for user-facing visualization
