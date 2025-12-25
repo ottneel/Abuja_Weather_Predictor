@@ -74,7 +74,7 @@ Here is an overview of the sub-directories and files. Under the `MLOps_Weather_P
 
 ### 1. Clone the repo
 ```
-git clone https://github.com/your-username/MLOps_Weather_Pipeline.git
+git clone https://github.com/ottneel/MLOps_Weather_Pipeline.git
 cd MLOps_Weather_Pipeline
 ```
 
