@@ -112,6 +112,7 @@ def evaluate():
         print(f"\n SELECTED WINNER: {winner} (Overall MAE: {w_mae:.4f})")
 
         # 4. THE QUALITY CHECK (SAFETY CHECK)
+
         # Calculate MAE specifically for the last 3 days of the test set
         last_3_actuals = test_data.iloc[-3:]
         last_3_forecasts = w_preds[-3:]
@@ -139,7 +140,6 @@ def evaluate():
         mlflow.log_metric("check_mae", check_mae)
 
         # 5. LOG RESULTS (Only happens if Check Passes)
-
         mlflow.log_param("winner", winner)
         # CRITICAL: Log these as strings so Training Script can read them
         mlflow.log_param("best_order", str(w_order))
