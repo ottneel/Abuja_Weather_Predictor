@@ -118,3 +118,5 @@ streamlit run deployment/app.py
 * **CI/CD:** Implement GitHub Actions to automatically run the scripts without manual intervention.
 * **Advanced Modeling:** Experiment with **LSTM** (Long Short-Term Memory) networks or **Facebook Prophet** to better capture long-term seasonal trends.
 * **Alerting:** Integrate Email or Slack notifications to alert engineers immediately if the forecast MAE exceeds a specific safety threshold.
+
+* Read the Article: [Building an Autonomous MLOps Weather Engine (Abuja, Nigeria)](https://medium.com/@ottneel/building-an-autonomous-mlops-weather-engine-abuja-nigeria-ff8e27e11df3)
