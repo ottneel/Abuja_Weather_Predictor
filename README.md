@@ -47,7 +47,7 @@ This project demonstrates a complete MLOps lifecycle integrating:
 
 ## F. Project Folder Structure and Files Description
 
-Here is an overview of the sub-directories and files. Under the `Abuja MLOps Weather Pipeline` main folder, we have:
+Here is an overview of the sub-directories and files. Under the `MLOps_Weather_Pipeline` main folder, we have:
 
 * **`Data ingestion/` Directory:**
     Handles the "Extract" and "Load" phases of the pipeline.
@@ -57,11 +57,11 @@ Here is an overview of the sub-directories and files. Under the `Abuja MLOps Wea
 
 * **`models/`:**
     * `train.py`: Runs the Auto-ARIMA search, logs metrics (AIC/BIC) to MLflow, and registers the best model version.
-    * `validate.py`: The Quality Assurance layer. It performs time-series cross-validation to calculate a realistic RMSE before deployment.
+    * `validate.py`: The Quality Assurance layer. It performs time-series cross-validation to calculate a realistic MAE before deployment.
 
 * **`deployment/`:**
     Handles Operations and Serving.
-    * `predict.py`: The inference engine. It loads the model from MLflow, fetches recent "gap data" from the DB, updates the model state, and writes the 7-day forecast back to the DB.
+    * `predict.py`: The inference engine. It loads the model from MLflow, fetches recent "gap data" from the DB, updates the model state, and writes the 3-day forecast back to the DB.
     * `app.py`: The user interface. A Streamlit dashboard that visualizes the forecast vs. actuals reading directly from PostgreSQL.
 
 * **`images/` Directory:**
@@ -74,8 +74,8 @@ Here is an overview of the sub-directories and files. Under the `Abuja MLOps Wea
 
 ### 1. Clone the repo
 ```
-git clone https://github.com/your-username/Abuja_MLOps_Weather_Pipeline.git
-cd Abuja_MLOps_Weather_Pipeline
+git clone https://github.com/your-username/MLOps_Weather_Pipeline.git
+cd MLOps_Weather_Pipeline
 ```
 
 ### 2. Set up Python virtual environment
@@ -114,6 +114,6 @@ streamlit run deployment/app.py
 ## H. Future Improvements
 
 * **Dockerization:** Containerize the ingestion and inference scripts to ensure consistent environments across local and cloud deployments.
-* **CI/CD:** Implement GitHub Actions to automatically trigger `validate.py` on every Pull Request, preventing bad models from merging.
+* **CI/CD:** Implement GitHub Actions to automatically run the scripts without manual intervention.
 * **Advanced Modeling:** Experiment with **LSTM** (Long Short-Term Memory) networks or **Facebook Prophet** to better capture long-term seasonal trends.
-* **Alerting:** Integrate Email or Slack notifications to alert engineers immediately if the forecast RMSE exceeds a specific safety threshold.
+* **Alerting:** Integrate Email or Slack notifications to alert engineers immediately if the forecast MAE exceeds a specific safety threshold.
