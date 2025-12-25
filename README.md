@@ -2,19 +2,21 @@
 
 An end-to-end autonomous weather forecasting engine that ingests live sensor data, re-calibrates its internal state using rolling-window updates, and serves a 3-day temperature forecast via a Streamlit dashboard. The pipeline leverages a database-centric architecture to seperate training from inference, ensuring high availability and drift adaptability.
 
+> **Note (v1.0 Scope):** This initial release focuses exclusively on **Temperature Forecasting** as the foundational metric. The architecture is designed to scale easily to Humidity and Precipitation in future updates.
+
 ## A. Project Overview
 
 This project demonstrates a complete MLOps lifecycle integrating:
 - **OpenWeatherMap API** for real-time data extraction
 - **PostgreSQL** for centralized data warehousing and state management
-- **Auto-ARIMA** for seasonality detection ($m=3$) and trend analysis
+- **Auto-ARIMA** for seasonality detection ($m=7$) and trend analysis
 - **MLflow** for experiment tracking and model registry
 - **Walk-Forward Validation** for rigorous backtesting against local micro-climates
 - **Streamlit** for user-facing visualization
 
 ## B. Data Architecture
 
-![Architecture Diagram]([./image/"weather flowchart.png"](https://github.com/ottneel/Abuja_Weather_Predictor/blob/2889a0149598b0f8457255d3ff64b1ade703a1b6/image/weather%20flowchart.png))
+![Architecture Diagram](images/weather_flowchart.png)
 
 ## C. Tools & Technologies
 
@@ -38,7 +40,7 @@ This project demonstrates a complete MLOps lifecycle integrating:
 
 1.  **Ingest** real-time weather metrics via `ingest.py`.
 2.  **Store** raw data into the PostgreSQL warehouse.
-3.  **Train** the core model using Auto-ARIMA to identify seasonal parameters ($p,d,q$).
+3.  **Train** the core model using Auto-ARIMA to identify parameters ($p,d,q$).
 4.  **Validate** the model using Walk-Forward Cross-Validation.
 5.  **Predict** the next 3 days by feeding "gap data" into the frozen model state.
 6.  **Serve** the predictions via Streamlit, comparing them against live actuals.
