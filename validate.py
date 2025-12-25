@@ -95,7 +95,7 @@ def evaluate():
         )
         new_mae, new_preds = evaluate_params(train_data, test_data, auto.order, auto.seasonal_order, "New")
 
-        # THE DECISION
+        # 3. THE SELECTION DECISION
         # New Parameters must improve by at least 0.05 MAE to replace Current
         improvement_threshold = 0.05
         
@@ -109,9 +109,37 @@ def evaluate():
             winner = "Current (Retain Old)"
             w_order, w_seasonal, w_mae, w_preds = current_order, current_seasonal, current_mae, current_preds
 
-        print(f"\n WINNER: {winner} (MAE: {w_mae:.4f})")
+        print(f"\n SELECTED WINNER: {winner} (Overall MAE: {w_mae:.4f})")
 
-        # 4. LOG RESULTS FOR TRAINING
+        # 4. THE QUALITY CHECK (SAFETY CHECK)
+        # Calculate MAE specifically for the last 3 days of the test set
+        last_3_actuals = test_data.iloc[-3:]
+        last_3_forecasts = w_preds[-3:]
+        
+        check_mae = mean_absolute_error(last_3_actuals, last_3_forecasts)
+        
+        print("\n QUALITY CHECK")
+        print(f"Last 3 Days Actuals:  {last_3_actuals.values}")
+        print(f"Last 3 Days Forecast: {[round(x, 2) for x in last_3_forecasts]}")
+        print(f"Recent MAE: {check_mae:.4f} (Threshold: 2.0)")
+
+        if check_mae > 2.0:
+            # LOG FAILURE AND CRASH
+            mlflow.log_param("quality_check", "FAILED")
+            mlflow.log_metric("check_mae", check_mae)
+            
+            error_msg = f"CRITICAL: Deployment Halted. Recent MAE ({check_mae:.2f}) > 2.0."
+            print(f"{error_msg}")
+            
+            # Raise error to stop CI/CD pipeline with a non-zero exit code
+            raise ValueError(error_msg)
+        
+        print("Quality Check PASSED. Proceeding to log parameters.")
+        mlflow.log_param("quality_check", "PASSED")
+        mlflow.log_metric("check_mae", check_mae)
+
+        # 5. LOG RESULTS (Only happens if Check Passes)
+
         mlflow.log_param("winner", winner)
         # CRITICAL: Log these as strings so Training Script can read them
         mlflow.log_param("best_order", str(w_order))
