@@ -7,6 +7,7 @@ An end-to-end autonomous weather forecasting engine that ingests live sensor dat
 ## A. Project Overview
 
 This project demonstrates a complete MLOps lifecycle integrating:
+- **Sensor Data** Historic data collected from ([OpenAfrica](https://open.africa/dataset/sensorsafrica-airquality-archive-abuja)) for Abuja
 - **OpenWeatherMap API** for real-time data extraction
 - **PostgreSQL** for centralized data warehousing and state management
 - **Auto-ARIMA** for seasonality detection ($m=7$) and trend analysis
